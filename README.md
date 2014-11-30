@@ -3,7 +3,7 @@
 Install with composer: 
 
 ```
-"martynbiz/database": "dev-master"
+"martynbiz/php-validator": "dev-master"
 ```
 
 After that, create a new instance of the class.
