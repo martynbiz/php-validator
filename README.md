@@ -94,10 +94,6 @@ $validator->check('publish_date')
 $validator->check('meeting_time')
   ->isTime('Value must be time hh:mm:ss');
 
-$validator->check('username')
-  ->isNotEmpty('Username missing')
-  ->isMaximumLength('Username must not exceed 16 characters', 16);
-
 // passwords
 
 $message = 'Password must contain upper and lower case characters, and have more than 8 characters';
@@ -106,17 +102,23 @@ $validator->check('password')
   ->hasLowerCase($message)
   ->hasUpperCase($message)
   ->isMinimumLength($message, 8);
-```
+
+// etc
+
+$validator->check('username')
+  ->isNotEmpty('Username missing')
+  ->isMaximumLength('Username must not exceed 16 characters', 16);
+
 ```
 
-### Other error logging
+### Other error logging ###
 
 You can use the logError() method too to log a custom error:
 
 ```php
 $validator->logError('Could not load api', 5000);
 
-### Extend Validator
+### Extend Validator ###
 
 Sometimes it's useful to add your own validator methods. This can be done by extending the class, and
 ensuring that your new method returns the instance logs the error:
@@ -130,12 +132,12 @@ class MyValidator extends Validator
     //this is an example model, use your own models here
     $user = $myUsersModel->findByEmail( $this->value );
     
-    // log error
+    // log error - required
     if ($user) {
       $this->logError($message);
     }
     
-    // return instance
+    // return instance - required
     return $this;
   }
 }
