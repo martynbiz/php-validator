@@ -8,7 +8,7 @@ composer require martynbiz/php-validator:dev-master
 
 After that, create a new instance of the class and set the params to check (e.g. $_POST).
 
-```
+```php
 $validator = MartynBiz\Validator::getInstance();
 $validator->setParams($_POST);
 ```
@@ -17,7 +17,7 @@ $validator->setParams($_POST);
 
 The set() method instructs the object that this is a new value to validate. Additional methods are chained from this. Below shows an example of the object checking a value is not empty, then checking it is a valid email address.
 
-```
+```php
 $email = '';
 $validator->check('email')
   ->isNotEmpty('Email address is blank')
@@ -26,13 +26,13 @@ $validator->check('email')
 
 To fetch the errors from a validation check, use getErrors():
 
-```
+```php
 $errors = $validator->getErrors();
 ```
 
 After validation, check if params are valid:
 
-```
+```php
 $continue = $validator->isValid();
 ```
 
@@ -40,7 +40,7 @@ This will return an array of containing the error that occured (Email address is
 
 It is also possible to do this in one go, and return errors:
 
-```
+```php
 $errors = $validator->check('email')
   ->isNotEmpty('Email address is blank')
   ->isEmail('Invalid email address')
@@ -51,7 +51,7 @@ $errors = $validator->check('email')
 
 The above example shows how to validate an email address but the following methods can be used to numeric, date and time stings too. Below is the full list of validation methods available.
 
-```
+```php
 // strings
 
 $validator->check('name')
@@ -98,6 +98,7 @@ $validator->check('password')
   ->isNotEmpty($message)
   ->hasLowerCase($message)
   ->hasUpperCase($message)
+  ->hasNumber()
   ->isMinimumLength($message, 8);
 
 // etc
@@ -111,15 +112,16 @@ $validator->check('username')
 
 You can use the logError() method too to log a custom error:
 
-```
+```php
 $validator->logError('Could not load api', 5000);
+```
 
 ### Extend Validator ###
 
 Sometimes it's useful to add your own validator methods. This can be done by extending the class, and
 ensuring that your new method returns the instance logs the error:
 
-```
+```php
 class MyValidator extends Validator
 {
   public function isUniqueEmail($message)
@@ -141,7 +143,7 @@ class MyValidator extends Validator
 
 Then you can chain the method as with the built in ones:
 
-```
+```php
 $validator = new MyValidator():
 $validator->setParams($_POST);
 $validator->check('email')
