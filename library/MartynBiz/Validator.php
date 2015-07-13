@@ -18,369 +18,382 @@ namespace MartynBiz;
 class Validator {
 	
 	/**
-	* Will contain the errors for the duration of the objects existence
-	*
-	* @var errors
-	*/
-	private $errors = [];
-	
-	/**
-	* Key used to provide error message
-	*
-	* @var string
-	*/
-	private $key = '';
-	
-	/**
-	* Value of the variable being validated, set in chain()
-	*
-	* @var string?
-	*/
-	private $value;
-	
-	/**
-	* When an error is found in a chain, switch of error logging for the remainder of the chain
-	*
-	* @var errors
-	*/
-	private $checking = [];
+    * Will contain the errors for the duration of the objects existence
+    *
+    * @var errors
+    */
+    protected $errors = [];
+    
+    /**
+    * Key used to provide error message
+    *
+    * @var string
+    */
+    protected $key = '';
+    
+    /**
+    * Value of the variable being validated, set in chain()
+    *
+    * @var string?
+    */
+    protected $value;
+    
+    /**
+    * When an error is found in a chain, switch of error logging for the remainder of the chain
+    *
+    * @var errors
+    */
+    protected $checking = [];
     
     
     
     // PUBLIC FUNCTIONS
     
     /**
-	* Simply return the instantiated object, or instantiated if not already done so.
-	*
-	* @return object Returns the current instance.
-	*/
-    public function getInstance() {
-		
-		static $obj_instance;
-	
-		if (!isset ($obj_instance)) {
-		    $obj_instance = new ChainValidator();
-		}
-	
-		return $obj_instance;
-		
+    * Simply return the instantiated object, or instantiated if not already done so.
+    *
+    * @return object Returns the current instance.
+    */
+    public function getInstance() 
+    {
+        
+        static $obj_instance;
+    
+        if (!isset ($obj_instance)) {
+            $obj_instance = new ChainValidator();
+        }
+    
+        return $obj_instance;
+        
     }
-	
-	// other functions
-	
-	/**
-	* Log an error.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function logError($message) {
-		// Log a new error
-		// error_message - this is the error message, this is custom
-		// error_code - this is the error code that we will affix to this error
-		
-		$this->errors[$this->key] = $message;
-		
-		// we have tracked a log, close the log for the rest of the chain
-		$this->checking = false;
-	}
+    
+    // other functions
+    
+    /**
+    * Log an error.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function logError($key, $message) 
+    {
+        // Log a new error
+        // error_message - this is the error message, this is custom
+        // error_code - this is the error code that we will affix to this error
+        
+        $this->errors[$key] = $message;
+        
+        // we have tracked a log, close the log for the rest of the chain
+        $this->checking = false;
+    }
     
     /**
     * Get errors.
     *
     * @return boolean
     */
-    public function isValid() {
+    public function isValid() 
+    {
         // Return the errors array
         
         // return errors
         return empty($this->getErrors());
     }
-	
-	/**
-	* Get errors.
-	*
-	* @return array Returns errors.
-	*/
-	public function getErrors() {
-		// Return the errors array
-		
-		// return errors
-		return $this->errors;
-	}
-	
-	/**
-	* Set params (e.g. POST params)
-	*
-	* @param array $params Array of name/values
-	*/
-	public function setParams($params) {
-		$this->params = $params;
-	}
-	
-	/**
-	* Start a chain.
-	* 
-	* @param string $value set the value we are going to validate in this chain
-	*
-	* @return object Returns this to begin chaining.
-	*/
-	public function check($key) {
-		// Return the errors array
-		
-		// set the value once
-		$this->key = $key;
-		$this->value = $this->params[$key];
-		
-		// open the log for errors
-		$this->checking = true;
-		
-		return $this;
-	}
-	
-	
-	/**
-	* Value is not empty or whitespaces.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isNotEmpty($message=null) {
-		
-		$reg = '/^$|\s+/'; // empty or white space
-		
-		// default error message
-		if (is_null($message)) 
-			$message = $this->key . ' is required.';
-		
-		// check
-		if(preg_match($reg, $this->value) and $this->checking) { // match!
-			$this->logError($message);
-		}
-		
-		return $this;
-	}
-	
-	/**
-	* Value is a valid email address.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isEmail($message=null) {
-		
-		if(! filter_var($this->value, FILTER_VALIDATE_EMAIL) and $this->checking) {
-			$this->logError($message);
-		}
-		
-		return $this;
-	}
-	
-	/**
-	* Value is letters only, not numbers.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isLetters($message=null) {
-		
-		$reg = "/^[a-zA-Z\s]+$/"; // only letters
-		
-		if(! preg_match($reg, "{$this->value}") and $this->checking) {
-			$this->logError($message);
-		}
-		
-		return $this;
-	}
-	
-	/**
-	* Value is a numbers. Positive, negative and zero accepted.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isNumeric($message=null) {
-		
-		$reg = "/^\d*\.?\d*$/"; // numeric
-		
-		if(! preg_match($reg, "{$this->value}") and $this->checking) {
-			$this->logError($message);
-		}
-		
-		return $this;
-	}
-	
-	/**
-	* Value is only positive, no negative or zeros.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isPositiveNumber($message=null) {
-		
-		$reg = "/^[1-9][0-9]*$/"; // positive number expression
-		
-		if(! preg_match($reg, "{$this->value}") and $this->checking) {
-			$this->logError($message);
-		}
-		
-		return $this;
-		
-	}
-	
-	/**
-	* Value is not positive, negative or zeros ok.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isNotPositiveNumber($message=null) {
-		
-		$reg = "/^[1-9][0-9]*$/"; // positive number expression
-		
-		if(preg_match($reg, "{$this->value}") and $this->checking) {
-			$this->logError($message);
-		}
-		
-		return $this;
-		
-	}
-	
-	/**
-	* Value is only negative, no positive or zeros.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isNegativeNumber($message=null) {
-		
-		$reg = "/^-[1-9][0-9]*$/"; // negetive number expression
-		
-		if(! preg_match($reg, "{$this->value}") and $this->checking) {
-			$this->logError($message);
-		}
-		
-		return $this;
-		
-	}
-	
-	/**
-	* Value is not negative, positives and zeros ok.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isNotNegativeNumber($message=null) {
-		
-		$reg = "/^-[1-9][0-9]*$/"; // negetive number expression
-		
-		if(preg_match($reg, "{$this->value}") and $this->checking) { // match
-			$this->logError($message);
-		}
-		
-		return $this;
-		
-	}
-	
-	/**
-	* Value is valid date time string.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isDateTime($message=null) {
-		
-		$reg = "/^\d{4}-\d{2}-\d{2} ([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/"; // date time expression
-		
-		if(! preg_match($reg, "{$this->value}") and $this->checking) {
-			$this->logError($message);
-		} else {
-			
-			// the date may have the correct format, but let's check for leap years, 30 day months etc
-			$datetime = explode(' ', $this->value);
-			$date = explode('-', $datetime[0]);
-			
-			$year = intval($date[0]);
-			$month = intval($date[1]);
-			$day = intval($date[2]);
-			
-			if(! checkdate($month, $day, $year) and $this->checking) {
-				$this->logError($message);
-			}
-		}
-		
-		return $this;
-	}
+    
+    /**
+    * Get errors.
+    *
+    * @return array Returns errors.
+    */
+    public function getErrors() 
+    {
+        // Return the errors array
+        
+        // return errors
+        return $this->errors;
+    }
+    
+    /**
+    * Set params (e.g. POST params)
+    *
+    * @param array $params Array of name/values
+    */
+    public function setParams($params) 
+    {
+        $this->params = $params;
+    }
+    
+    /**
+    * Start a chain.
+    * 
+    * @param string $value set the value we are going to validate in this chain
+    *
+    * @return object Returns this to begin chaining.
+    */
+    public function check($key) 
+    {
+        // Return the errors array
+        
+        // set the value once
+        $this->key = $key;
+        $this->value = $this->params[$key];
+        
+        // open the log for errors
+        $this->checking = true;
+        
+        return $this;
+    }
+    
+    
+    /**
+    * Value is not empty or whitespaces.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isNotEmpty($message) 
+    {
+        
+        $reg = '/^$|\s+/'; // empty or white space
+        
+        // check
+        if(preg_match($reg, $this->value) and $this->checking) { // match!
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+    }
+    
+    /**
+    * Value is a valid email address.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isEmail($message) 
+    {
+        
+        if(! filter_var($this->value, FILTER_VALIDATE_EMAIL) and $this->checking) {
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+    }
+    
+    /**
+    * Value is letters only, not numbers.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isLetters($message) 
+    {
+        
+        $reg = "/^[a-zA-Z\s]+$/"; // only letters
+        
+        if(! preg_match($reg, "{$this->value}") and $this->checking) {
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+    }
+    
+    /**
+    * Value is a numbers. Positive, negative and zero accepted.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isNumeric($message) 
+    {
+        
+        $reg = "/^\d*\.?\d*$/"; // numeric
+        
+        if(! preg_match($reg, "{$this->value}") and $this->checking) {
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+    }
+    
+    /**
+    * Value is only positive, no negative or zeros.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isPositiveNumber($message) 
+    {
+        
+        $reg = "/^[1-9][0-9]*$/"; // positive number expression
+        
+        if(! preg_match($reg, "{$this->value}") and $this->checking) {
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+        
+    }
+    
+    /**
+    * Value is not positive, negative or zeros ok.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isNotPositiveNumber($message) 
+    {
+        
+        $reg = "/^[1-9][0-9]*$/"; // positive number expression
+        
+        if(preg_match($reg, "{$this->value}") and $this->checking) {
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+        
+    }
+    
+    /**
+    * Value is only negative, no positive or zeros.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isNegativeNumber($message) 
+    {
+        
+        $reg = "/^-[1-9][0-9]*$/"; // negetive number expression
+        
+        if(! preg_match($reg, "{$this->value}") and $this->checking) {
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+        
+    }
+    
+    /**
+    * Value is not negative, positives and zeros ok.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isNotNegativeNumber($message) 
+    {
+        
+        $reg = "/^-[1-9][0-9]*$/"; // negetive number expression
+        
+        if(preg_match($reg, "{$this->value}") and $this->checking) { // match
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+        
+    }
+    
+    /**
+    * Value is valid date time string.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isDateTime($message) 
+    {
+        
+        $reg = "/^\d{4}-\d{2}-\d{2} ([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/"; // date time expression
+        
+        if(! preg_match($reg, "{$this->value}") and $this->checking) {
+            $this->logError($this->key, $message);
+        } else {
+            
+            // the date may have the correct format, but let's check for leap years, 30 day months etc
+            $datetime = explode(' ', $this->value);
+            $date = explode('-', $datetime[0]);
+            
+            $year = intval($date[0]);
+            $month = intval($date[1]);
+            $day = intval($date[2]);
+            
+            if(! checkdate($month, $day, $year) and $this->checking) {
+                $this->logError($this->key, $message);
+            }
+        }
+        
+        return $this;
+    }
 
-	/**
-	* Value is valid date string.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isDate($message=null) {
-		
-		$reg = "/^\d{4}-\d{2}-\d{2}$/"; // date expression
-		
-		if(! preg_match($reg, "{$this->value}") and $this->checking) {
-			$this->logError($message);
-		} else {
-			
-			// the date may have the correct format, but let's check for leap years, 30 day months etc
-			$date = explode('-', $this->value);
-			
-			$year = intval($date[0]);
-			$month = intval($date[1]);
-			$day = intval($date[2]);
-			
-			if(! checkdate($month, $day, $year) and $this->checking) {
-				$this->logError($message);
-			}
-		}
-		
-		return $this;
-	}
-	
-	/**
-	* Value is valid time string.
-	* 
-	* @param string $error_message human readable error message
-	* @param integer $error_code (optional) can set a numeric value for this type of error
-	*
-	* @return object Returns this to allow chaining.
-	*/
-	public function isTime($message=null) {
-		
-		$reg = "/^([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/"; // time expression
-		
-		if(! preg_match($reg, "{$this->value}") and $this->checking) {
-			$this->logError($message);
-		}
-		
-		return $this;
-	}
+    /**
+    * Value is valid date string.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isDate($message) 
+    {
+        
+        $reg = "/^\d{4}-\d{2}-\d{2}$/"; // date expression
+        
+        if(! preg_match($reg, "{$this->value}") and $this->checking) {
+            $this->logError($this->key, $message);
+        } else {
+            
+            // the date may have the correct format, but let's check for leap years, 30 day months etc
+            $date = explode('-', $this->value);
+            
+            $year = intval($date[0]);
+            $month = intval($date[1]);
+            $day = intval($date[2]);
+            
+            if(! checkdate($month, $day, $year) and $this->checking) {
+                $this->logError($this->key, $message);
+            }
+        }
+        
+        return $this;
+    }
+    
+    /**
+    * Value is valid time string.
+    * 
+    * @param string $error_message human readable error message
+    * @param integer $error_code (optional) can set a numeric value for this type of error
+    *
+    * @return object Returns this to allow chaining.
+    */
+    public function isTime($message) 
+    {
+        
+        $reg = "/^([01]?[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/"; // time expression
+        
+        if(! preg_match($reg, "{$this->value}") and $this->checking) {
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
+    }
     
     
     
@@ -398,18 +411,14 @@ class Validator {
     *
     * @return object Returns this to allow chaining.
     */
-    public function isMinimumLength($min, $message=null) {
+    public function isMinimumLength($message, $min) 
+    {
+        // check
+        if(strlen($this->value) < $min and $this->checking) { // match!
+            $this->logError($this->key, $message);
+        }
         
-        // default error message
-		if (is_null($message)) 
-			$message = $this->key . ' is less then ' . $min;
-		
-		// check
-		if(strlen($this->value) < $min and $this->checking) { // match!
-			$this->logError($message);
-		}
-		
-		return $this;
+        return $this;
     }
     
     /**
@@ -419,18 +428,14 @@ class Validator {
     *
     * @return object Returns this to allow chaining.
     */
-    public function isMaximumLength($max, $message=null) {
+    public function isMaximumLength($message, $max) 
+    {
+        // check
+        if(strlen($this->value) > $max and $this->checking) { // match!
+            $this->logError($this->key, $message);
+        }
         
-        // default error message
-		if (is_null($message)) 
-			$message = $this->key . ' is more then ' . $max;
-		
-		// check
-		if(strlen($this->value) > $max and $this->checking) { // match!
-			$this->logError($message);
-		}
-		
-		return $this;
+        return $this;
     }
     
     /**
@@ -440,41 +445,16 @@ class Validator {
     *
     * @return object Returns this to allow chaining.
     */
-    public function isLengthWithin($min, $max, $message=null) {
-        
-        // default error message
-		if (is_null($message)) 
-			$message = $this->key . ' is not within length (' . $min . ').';
-		
-		// check
-		if((!$this->isMinimumLength($min) or !$this->isMaximumLength($max)) and $this->checking) { // match!
-			$this->logError($message);
-		}
-		
-		return $this;
-    }
-    
-    /**
-    * Ensure meets minimum length
-    * 
-    * @param 
-    *
-    * @return object Returns this to allow chaining.
-    */
-    public function hasUpperCase($limit=1, $message=null) {
-        
+    public function hasUpperCase($message) 
+    {
         $reg = '/[A-Z]/'; // valid check
-		
-		// default error message
-		if (is_null($message)) 
-			$message = $this->key . ' requires at least ' . $limit . ' uppercase letter.';
-		
-		// check
-		if(!preg_match($reg, $this->value) and $this->checking) { // match!
-			$this->logError($message);
-		}
-		
-		return $this;
+        
+        // check
+        if(!preg_match($reg, $this->value) and $this->checking) { // match!
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
     }
     
     /**
@@ -484,20 +464,17 @@ class Validator {
     *
     * @return object Returns this to allow chaining.
     */
-    public function hasLowerCase($limit=1, $message=null) {
+    public function hasLowerCase($message) 
+    {
         
         $reg = '/[a-z]/'; // valid check
-		
-		// default error message
-		if (is_null($message)) 
-			$message = $this->key . ' requires at least ' . $limit . ' lowercase letter.';
-		
-		// check
-		if(!preg_match($reg, $this->value) and $this->checking) { // match!
-			$this->logError($message);
-		}
-		
-		return $this;
+        
+        // check
+        if(!preg_match($reg, $this->value) and $this->checking) { // match!
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
     }
     
     /**
@@ -507,20 +484,17 @@ class Validator {
     *
     * @return object Returns this to allow chaining.
     */
-    public function hasNumber($limit=1, $message=null) {
+    public function hasNumber($message) 
+    {
         
         $reg = '/[0-9]/'; // valid check
-		
-		// default error message
-		if (is_null($message)) 
-			$message = $this->key . ' requires at least ' . $limit . ' number.';
-		
-		// check
-		if(!preg_match($reg, $this->value) and $this->checking) { // match!
-			$this->logError($message);
-		}
-		
-		return $this;
+        
+        // check
+        if(!preg_match($reg, $this->value) and $this->checking) { // match!
+            $this->logError($this->key, $message);
+        }
+        
+        return $this;
     }
 	
 }

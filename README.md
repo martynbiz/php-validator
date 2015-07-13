@@ -94,14 +94,18 @@ $validator->check('publish_date')
 $validator->check('meeting_time')
   ->isTime('Value must be time hh:mm:ss');
 
+$validator->check('username')
+  ->isNotEmpty('Username missing')
+  ->isMaximumLength('Username must not exceed 16 characters', 16);
+
 // passwords
 
-$message = 'Password must contain upper and lower case characters';
+$message = 'Password must contain upper and lower case characters, and have more than 8 characters';
 $validator->check('password')
   ->isNotEmpty($message)
   ->hasLowerCase($message)
   ->hasUpperCase($message)
-  ->isWithinRange(4,8, 'Password must be between 4 and 8 characters long');
+  ->isMinimumLength($message, 8);
 ```
 ```
 
@@ -111,6 +115,41 @@ You can use the logError() method too to log a custom error:
 
 ```php
 $validator->logError('Could not load api', 5000);
+
+### Extend Validator
+
+Sometimes it's useful to add your own validator methods. This can be done by extending the class, and
+ensuring that your new method returns the instance logs the error:
+
+```php
+class MyValidator extends Validator
+{
+  public function isUniqueEmail($message)
+  {
+    //check whether this email exists in the db
+    //this is an example model, use your own models here
+    $user = $myUsersModel->findByEmail( $this->value );
+    
+    // log error
+    if ($user) {
+      $this->logError($message);
+    }
+    
+    // return instance
+    return $this;
+  }
+}
+```
+
+Then you can chain the method as with the built in ones:
+
+```php
+$validator = new MyValidator():
+$validator->setParams($_POST);
+$validator->check('email')
+  ->isNotEmpty()
+  ->isEmail()
+  ->isUniqueEmail(); // new method
 ```
 
 #TODO#

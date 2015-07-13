@@ -13,7 +13,29 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     
     public function testInitialization()
     {
-        $this->assertTrue($this->validator instanceof Validator); // yey!
+        $validator = $this->validator;
+        
+        $this->assertTrue($validator instanceof Validator); // yey!
+    }
+    
+    public function testLogErrors()
+    {
+        $validator = $this->validator;
+        
+        // assert errors is empty initially
+        $this->assertEquals(0, count($validator->getErrors()));
+        
+        $message = 'I logged this';
+        $key = 'my_key';
+        $validator->logError($key, $message);
+        
+        // get errors
+        $errors = $validator->getErrors();
+        
+        // // check it has something now
+        $this->assertEquals(1, count($errors));
+        $this->assertTrue( array_key_exists($key, $errors) );
+        $this->assertEquals($message, current($errors));
     }
     
     /**
@@ -50,7 +72,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         
         // validate
         $result = $validator->check('name')
-            ->isNotEmpty();
+            ->isNotEmpty('Missing field');
         
         // get errors
         $errors = $validator->getErrors();
@@ -70,7 +92,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         
         // validate
         $result = $validator->check('email')
-            ->isEmail();
+            ->isEmail('Not email');
         
         // get errors
         $errors = $validator->getErrors();
@@ -90,7 +112,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         
         // validate
         $result = $validator->check('password')
-            ->isMinimumLength(8);
+            ->isMinimumLength('Not long enough', 8);
         
         // get errors
         $errors = $validator->getErrors();
@@ -110,29 +132,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         
         // validate
         $result = $validator->check('password')
-            ->isMaximumLength(8);
-        
-        // get errors
-        $errors = $validator->getErrors();
-        
-        // assert
-        $this->assertEquals($valid, $validator->isValid());
-        $this->assertEquals(($valid ? 0 : 1), count($errors));
-    }
-    
-    /**
-     * @dataProvider getIsLengthWithinArray
-     * @depends testIsMimimumLength
-     * @depends testIsMaximumLength
-     */
-    public function testIsLengthWithin($params, $valid)
-    {
-        $validator = $this->validator;
-        $validator->setParams($params);
-        
-        // validate
-        $result = $validator->check('password')
-            ->isLengthWithin(4, 8);
+            ->isMaximumLength('To long', 8);
         
         // get errors
         $errors = $validator->getErrors();
@@ -152,7 +152,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         
         // validate
         $result = $validator->check('password')
-            ->hasUpperCase();
+            ->hasUpperCase('No upper case');
         
         // get errors
         $errors = $validator->getErrors();
@@ -172,7 +172,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         
         // validate
         $result = $validator->check('password')
-            ->hasLowerCase();
+            ->hasLowerCase('No lower case');
         
         // get errors
         $errors = $validator->getErrors();
@@ -192,7 +192,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         
         // validate
         $result = $validator->check('password')
-            ->hasNumber();
+            ->hasNumber('No number');
         
         // get errors
         $errors = $validator->getErrors();
@@ -332,33 +332,6 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             ],
             [
                 ['password' => '12345678'], true
-            ],
-            [
-                ['password' => '12345678901234'], false
-            ],
-        ];
-    }
-    
-    public function getIsLengthWithinArray()
-    {
-        return [
-            [
-                ['password' => '1'], false
-            ],
-            [
-                ['password' => '123'], false
-            ],
-            [
-                ['password' => '1234'], true
-            ],
-            [
-                ['password' => '1234567'], true
-            ],
-            [
-                ['password' => '12345678'], true
-            ],
-            [
-                ['password' => '123456789'], false
             ],
             [
                 ['password' => '12345678901234'], false
