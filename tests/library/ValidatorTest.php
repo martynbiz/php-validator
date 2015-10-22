@@ -5,39 +5,39 @@ use MartynBiz\Validator;
 class ValidatorTest extends PHPUnit_Framework_TestCase
 {
     protected $validator;
-    
+
     public function setUp()
     {
         $this->validator = new Validator();
     }
-    
+
     public function testInitialization()
     {
         $validator = $this->validator;
-        
+
         $this->assertTrue($validator instanceof Validator); // yey!
     }
-    
+
     public function testLogErrors()
     {
         $validator = $this->validator;
-        
+
         // assert errors is empty initially
         $this->assertEquals(0, count($validator->getErrors()));
-        
+
         $message = 'I logged this';
         $key = 'my_key';
         $validator->logError($key, $message);
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // // check it has something now
         $this->assertEquals(1, count($errors));
         $this->assertTrue( array_key_exists($key, $errors) );
         $this->assertEquals($message, current($errors));
     }
-    
+
     public function testHas()
     {
         $validator = $this->validator;
@@ -52,7 +52,40 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($validator->has('email'));
         $this->assertFalse($validator->has('missing_field'));
     }
-        
+
+    public function testCheckIsKeyNotInParams()
+    {
+        $validator = $this->validator;
+        $validator->setParams(array(
+            'name' => '', // empty should return true
+            'age' => 34, // numbers should return true
+            'email' => 'martyn@example.com',
+        ));
+
+        // key is found
+        $result = $validator->check('name');
+        $result = $validator->check('age');
+        $result = $validator->check('email');
+
+        // get errors
+        $errors = $validator->getErrors();
+
+        // assert
+        $this->assertTrue($validator->isValid());
+        $this->assertEquals(0, count($errors));
+
+        // check missing key
+        $result = $validator->check('missing_key');
+
+        // get errors
+        $errors = $validator->getErrors();
+
+        // assert
+        $this->assertFalse($validator->isValid());
+        $this->assertTrue( array_key_exists('missing_key', $errors) );
+        $this->assertEquals(1, count($errors));
+    }
+
     /**
      * @dataProvider getIsNotEmptyArray
      */
@@ -62,21 +95,21 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $validator->setParams([
             'name' => ''
         ]);
-        
+
         // validate
         $message = 'Value is empty';
         $result = $validator->check('name')
             ->isNotEmpty($message);
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // assert
         $this->assertFalse($validator->isValid());
         $this->assertTrue( array_key_exists('name', $errors) );
         $this->assertEquals($message, $errors['name']);
     }
-    
+
     /**
      * @dataProvider getIsNotEmptyArray
      */
@@ -84,19 +117,19 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $validator = $this->validator;
         $validator->setParams($params);
-        
+
         // validate
         $result = $validator->check('name')
             ->isNotEmpty('Missing field');
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // assert
         $this->assertEquals($valid, $validator->isValid());
         $this->assertEquals(($valid ? 0 : 1), count($errors));
     }
-    
+
     /**
      * @dataProvider getIsEmailArray
      */
@@ -104,19 +137,19 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $validator = $this->validator;
         $validator->setParams($params);
-        
+
         // validate
         $result = $validator->check('email')
             ->isEmail('Not email');
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // assert
         $this->assertEquals($valid, $validator->isValid());
         $this->assertEquals(($valid ? 0 : 1), count($errors));
     }
-    
+
     /**
      * @dataProvider getIsMinimumLengthArray
      */
@@ -124,19 +157,19 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $validator = $this->validator;
         $validator->setParams($params);
-        
+
         // validate
         $result = $validator->check('password')
             ->isMinimumLength('Not long enough', 8);
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // assert
         $this->assertEquals($valid, $validator->isValid());
         $this->assertEquals(($valid ? 0 : 1), count($errors));
     }
-    
+
     /**
      * @dataProvider getIsMaximumLengthArray
      */
@@ -144,19 +177,19 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $validator = $this->validator;
         $validator->setParams($params);
-        
+
         // validate
         $result = $validator->check('password')
             ->isMaximumLength('To long', 8);
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // assert
         $this->assertEquals($valid, $validator->isValid());
         $this->assertEquals(($valid ? 0 : 1), count($errors));
     }
-    
+
     /**
      * @dataProvider getHasUpperCaseArray
      */
@@ -164,19 +197,19 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $validator = $this->validator;
         $validator->setParams($params);
-        
+
         // validate
         $result = $validator->check('password')
             ->hasUpperCase('No upper case');
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // assert
         $this->assertEquals($valid, $validator->isValid());
         $this->assertEquals(($valid ? 0 : 1), count($errors));
     }
-    
+
     /**
      * @dataProvider getHasLowerCaseArray
      */
@@ -184,19 +217,19 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $validator = $this->validator;
         $validator->setParams($params);
-        
+
         // validate
         $result = $validator->check('password')
             ->hasLowerCase('No lower case');
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // assert
         $this->assertEquals($valid, $validator->isValid());
         $this->assertEquals(($valid ? 0 : 1), count($errors));
     }
-    
+
     /**
      * @dataProvider getHasNumberArray
      */
@@ -204,138 +237,138 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     {
         $validator = $this->validator;
         $validator->setParams($params);
-        
+
         // validate
         $result = $validator->check('password')
             ->hasNumber('No number');
-        
+
         // get errors
         $errors = $validator->getErrors();
-        
+
         // assert
         $this->assertEquals($valid, $validator->isValid());
         $this->assertEquals(($valid ? 0 : 1), count($errors));
     }
-    
-    
+
+
     // data providers
-    
+
     public function getIsNotEmptyArray()
     {
         return [
             [
                 [
                     'name' => ''
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'name' => null
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'name' => false
-                ], 
+                ],
                 false
             ],
-            
+
             [
                 [
                     'name' => 'something'
-                ], 
+                ],
                 true
             ],
         ];
     }
-    
+
     public function getIsEmailArray()
     {
         return [
             [
                 [
                     'email' => 'martyn'
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'email' => 'martyn@',
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'email' => 'martyn@yahoo',
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'email' => 'martyn@yahoo.',
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'email' => 'yahoo.com',
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'email' => '@yahoo.com',
-                ], 
+                ],
                 false
             ],
-            
+
             [
                 [
                     'email' => 'martyn@yahoo.com',
-                ], 
+                ],
                 true
             ],
             [
                 [
                     'email' => 'martyn+something@yahoo.com',
-                ], 
+                ],
                 true
             ],
         ];
     }
-    
+
     public function getIsMinimumLengthArray()
     {
         return [
             [
                 [
                     'password' => '1'
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'password' => '1234567'
-                ], 
+                ],
                 false
             ],
             [
                 [
                     'password' => '12345678'
-                ], 
+                ],
                 true
             ],
             [
                 [
                     'password' => '12345678901234'
-                ], 
+                ],
                 true
             ],
         ];
     }
-    
+
     public function getIsMaximumLengthArray()
     {
         return [
@@ -353,7 +386,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             ],
         ];
     }
-    
+
     public function getHasUpperCaseArray()
     {
         return [
@@ -368,7 +401,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             ],
         ];
     }
-    
+
     public function getHasLowerCaseArray()
     {
         return [
@@ -383,7 +416,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
             ],
         ];
     }
-    
+
     public function getHasNumberArray()
     {
         return [

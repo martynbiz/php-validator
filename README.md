@@ -1,6 +1,6 @@
 ##Installation
 
-Install with composer: 
+Install with composer:
 
 ```
 composer require martynbiz/php-validator:dev-master
@@ -9,7 +9,7 @@ composer require martynbiz/php-validator:dev-master
 After that, create a new instance of the class and set the params to check (e.g. $_POST).
 
 ```php
-$validator = MartynBiz\Validator::getInstance();
+$validator = new MartynBiz\Validator();
 $validator->setParams($_POST);
 ```
 
@@ -62,10 +62,10 @@ The above example shows how to validate an email address but the following metho
 
 $validator->check('name')
   ->isNotEmpty('Value must not be blank');
-  
+
 $validator->check('email')
   ->isEmail('Email address must be valid');
-  
+
 $validator->check('name')
   ->isLetters('Value must be letters');
 
@@ -73,16 +73,16 @@ $validator->check('name')
 
 $validator->check('amount')
   ->isNumber('Value must be a number');
-  
+
 $validator->check('profit')
   ->isPositiveNumber('Value must be a positive number');
-  
+
 $validator->check('loss')
   ->isNotPositiveNumber('Value must not be a positive number, negatives and zeros OK');
-  
+
 $validator->check('loss')
   ->isNegativeNumber('Value must be a negative number');
-  
+
 $validator->check('profit')
   ->isNotNegativeNumber('Value must not be a negative number, positives and zeros OK');
 
@@ -90,10 +90,10 @@ $validator->check('profit')
 
 $validator->check('publish_date')
   ->isDateTime('Value must be date/time format yyyy-mm-dd hh:mm:ss');
-  
+
 $validator->check('publish_date')
   ->isDate('Value must be date format yyyy-mm-dd');
-  
+
 $validator->check('meeting_time')
   ->isTime('Value must be time hh:mm:ss');
 
@@ -135,12 +135,12 @@ class MyValidator extends Validator
     //check whether this email exists in the db
     //this is an example model, use your own models here
     $user = $myUsersModel->findByEmail( $this->value );
-    
+
     // log error - required
     if ($user) {
       $this->logError($message);
     }
-    
+
     // return instance - required
     return $this;
   }
@@ -161,3 +161,4 @@ $validator->check('email')
 #TODO#
 
 * finish tests
+* pass params like $validator = new MartynBiz\Validator($params);
