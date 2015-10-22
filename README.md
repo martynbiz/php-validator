@@ -162,3 +162,4 @@ $validator->check('email')
 
 * finish tests
 * pass params like $validator = new MartynBiz\Validator($params);
+* $validator->check('name')->isRequired() .. OR $validator->optional('name')->isNotEmpty(), $validator->required('name')->isNotEmpty()
