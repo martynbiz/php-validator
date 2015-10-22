@@ -90,6 +90,15 @@ class Validator {
     }
     
     /**
+    * Check if a parameter exists
+    * @param string $key Key to check if exists
+    */
+    public function has($key)
+    {
+        return isset($this->params[$key]);
+    }
+        
+    /**
     * Get errors.
     *
     * @return boolean

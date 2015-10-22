@@ -38,6 +38,21 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($message, current($errors));
     }
     
+    public function testHas()
+    {
+        $validator = $this->validator;
+        $validator->setParams([
+            'name' => '', // empty should return true
+            'age' => 34, // numbers should return true
+            'email' => 'martyn@example.com',
+        ]);
+
+        $this->assertTrue($validator->has('name'));
+        $this->assertTrue($validator->has('age'));
+        $this->assertTrue($validator->has('email'));
+        $this->assertFalse($validator->has('missing_field'));
+    }
+        
     /**
      * @dataProvider getIsNotEmptyArray
      */

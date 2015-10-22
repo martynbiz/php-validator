@@ -36,6 +36,12 @@ After validation, check if params are valid:
 $continue = $validator->isValid();
 ```
 
+Check if a params exists in the validator (basically just isset, but makes code more readable):
+
+```php
+if ($validator->has('name')) {...
+```
+
 This will return an array of containing the error that occured (Email address is blank). Please note that although the isEmail method was called too, because it has already gathered an error it does not record another. Remember this when ordering your methods in the chain.
 
 It is also possible to do this in one go, and return errors:
