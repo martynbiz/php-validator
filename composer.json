@@ -1,9 +1,9 @@
 {
-    "name": "martynbiz/database",
+    "name": "martynbiz/php-validator",
     "type": "library",
-    "description": "Collection of database classes to allow database operations and unit testing",
-    "keywords": ["database", "table gateway", "database adapter", "row gateway"],
-    "homepage": "http://github.com/martynbiz/database",
+    "description": "Basic validation for PHP forms",
+    "keywords": ["validation", "form"],
+    "homepage": "http://github.com/martynbiz/php-validator",
     "license": "MIT",
     "authors": [
         {
