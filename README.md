@@ -143,30 +143,30 @@ ensuring that your new method returns the instance logs the error:
 ```php
 class MyValidator extends Validator
 {
-    public function isUniqueEmail($message)
-    {
-        //check whether this email exists in the db
-        //this is an example model, use your own models here
-        $user = $myUsersModel->findByEmail( $this->value );
+  public function isUniqueEmail($message)
+  {
+    //check whether this email exists in the db
+    //this is an example model, use your own models here
+    $user = $myUsersModel->findByEmail( $this->value );
 
-        // log error - required
-        if ($user) {
-          $this->logError($message);
-        }
-
-        // return instance - required
-        return $this;
+    // log error - required
+    if ($user) {
+      $this->logError($message);
     }
 
-    public function isValidPassword($message)
-    {
-        return $this
-          ->isNotEmpty($message)
-          ->hasLowerCase($message)
-          ->hasUpperCase($message)
-          ->hasNumber($message)
-          ->isMinimumLength($message, 8);
-    }
+    // return instance - required
+      return $this;
+  }
+
+  public function isValidPassword($message)
+  {
+    return $this
+      ->isNotEmpty($message)
+      ->hasLowerCase($message)
+      ->hasUpperCase($message)
+      ->hasNumber($message)
+      ->isMinimumLength($message, 8);
+  }
 }
 ```
 
