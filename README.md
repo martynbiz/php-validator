@@ -3,7 +3,7 @@
 Install with composer:
 
 ```
-composer require martynbiz/php-validator:dev-master
+composer require martynbiz/php-validator
 ```
 
 After that, create a new instance of the class and set the params to check (e.g. $_POST).
