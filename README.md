@@ -13,7 +13,7 @@ $validator = new MartynBiz\Validator();
 $validator->setParams($_POST);
 ```
 
-### Chaining
+### Basic Usage
 
 The set() method instructs the object that this is a new value to validate. Additional methods are chained from this. Below shows an example of the object checking a value is not empty, then checking it is a valid email address.
 
@@ -42,13 +42,6 @@ Check if a params exists in the validator (basically just isset, but makes code 
 if ($validator->has('name')) {...
 ```
 
-Optional fields are when validation only occurs on that param if the param is given.
-
-```php
-$validator->check('age', array('optional' => true))
-  ->is...
-```
-
 This will return an array of containing the error that occured (Email address is blank). Please note that although the isEmail method was called too, because it has already gathered an error it does not record another. Remember this when ordering your methods in the chain.
 
 It is also possible to do this in one go, and return errors:
@@ -58,6 +51,13 @@ $errors = $validator->check('email')
   ->isNotEmpty('Email address is blank')
   ->isEmail('Invalid email address')
   ->getErrors();
+```
+
+Optional fields are when validation only occurs on that param if the param is given.
+
+```php
+$validator->check('age', array('optional' => true))
+  ->is...
 ```
 
 ### Other methods for validating
