@@ -118,7 +118,7 @@ $validator->check('password')
   ->hasLowerCase($message)
   ->hasUpperCase($message)
   ->hasNumber($message)
-  ->isMinimumLength(8, $message);
+  ->isMinimumLength($message, 8);
 
 // etc
 
@@ -143,20 +143,30 @@ ensuring that your new method returns the instance logs the error:
 ```php
 class MyValidator extends Validator
 {
-  public function isUniqueEmail($message)
-  {
-    //check whether this email exists in the db
-    //this is an example model, use your own models here
-    $user = $myUsersModel->findByEmail( $this->value );
+    public function isUniqueEmail($message)
+    {
+        //check whether this email exists in the db
+        //this is an example model, use your own models here
+        $user = $myUsersModel->findByEmail( $this->value );
 
-    // log error - required
-    if ($user) {
-      $this->logError($message);
+        // log error - required
+        if ($user) {
+          $this->logError($message);
+        }
+
+        // return instance - required
+        return $this;
     }
 
-    // return instance - required
-    return $this;
-  }
+    public function isValidPassword($message)
+    {
+        return $this
+          ->isNotEmpty($message)
+          ->hasLowerCase($message)
+          ->hasUpperCase($message)
+          ->hasNumber($message)
+          ->isMinimumLength($message, 8);
+    }
 }
 ```
 
@@ -169,10 +179,7 @@ $validator->check('email')
   ->isNotEmpty()
   ->isEmail()
   ->isUniqueEmail(); // new method
+
+$validator->check('password')
+  ->isValidPassword();
 ```
-
-#TODO#
-
-* finish tests
-* pass params like $validator = new MartynBiz\Validator($params);
-* $validator->check('name')->isRequired() .. OR $validator->optional('name')->isNotEmpty(), $validator->required('name')->isNotEmpty()
