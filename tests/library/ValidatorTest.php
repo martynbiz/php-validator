@@ -183,7 +183,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         // validate
         $result = $validator->check('password')
-            ->isMinimumLength('Not long enough', 8);
+            ->isMinimumLength(8, 'Not long enough');
 
         // get errors
         $errors = $validator->getErrors();
@@ -203,7 +203,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
         // validate
         $result = $validator->check('password')
-            ->isMaximumLength('To long', 8);
+            ->isMaximumLength(8, 'To long');
 
         // get errors
         $errors = $validator->getErrors();

@@ -372,7 +372,7 @@ class Validator {
     * @param string $min Min legth of string
     * @return object Returns this to allow chaining.
     */
-    public function isMinimumLength($message, $min)
+    public function isMinimumLength($min, $message)
     {
         // check
         if(strlen($this->value) < $min and $this->checking) { // match!
@@ -387,7 +387,7 @@ class Validator {
     * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
-    public function isMaximumLength($message, $max)
+    public function isMaximumLength($max, $message)
     {
         // check
         if(strlen($this->value) > $max and $this->checking) { // match!

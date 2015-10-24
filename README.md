@@ -76,6 +76,12 @@ $validator->check('email')
 $validator->check('name')
   ->isLetters('Value must be letters');
 
+$validator->check('name')
+  ->isMinimumLength('Password must be at least 8 characters', 8);
+
+$validator->check('name')
+  ->isMaximumLength('Password must be no more than 16 characters', 16);
+
 // numeric strings
 
 $validator->check('amount')
@@ -111,8 +117,8 @@ $validator->check('password')
   ->isNotEmpty($message)
   ->hasLowerCase($message)
   ->hasUpperCase($message)
-  ->hasNumber()
-  ->isMinimumLength($message, 8);
+  ->hasNumber($message)
+  ->isMinimumLength(8, $message);
 
 // etc
 
