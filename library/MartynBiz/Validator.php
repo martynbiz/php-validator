@@ -14,75 +14,43 @@ namespace MartynBiz;
 * @link https://github.com/martynbiz/php-validator
 * @version 1.0
 */
-
 class Validator {
 
 	/**
     * Will contain the errors for the duration of the objects existence
-    *
     * @var errors
     */
     protected $errors = [];
 
     /**
     * Key used to provide error message
-    *
     * @var string
     */
-    protected $key = '';
+    protected $key;
 
     /**
     * Value of the variable being validated, set in chain()
-    *
-    * @var string?
+    * @var string
     */
     protected $value;
 
     /**
     * When an error is found in a chain, switch of error logging for the remainder of the chain
-    *
     * @var errors
     */
-    protected $checking = [];
-
-
-
-    // PUBLIC FUNCTIONS
-
-    // /**
-    // * Simply return the instantiated object, or instantiated if not already done so.
-    // *
-    // * @return object Returns the current instance.
-    // */
-    // public function getInstance()
-    // {
-    //
-    //     static $obj_instance;
-    //
-    //     if (!isset ($obj_instance)) {
-    //         $obj_instance = new self();
-    //     }
-    //
-    //     return $obj_instance;
-    //
-    // }
+    protected $checking = true;
 
     // other functions
 
     /**
-    * Log an error.
-    *
+    * Log an error
     * @param string $error_message human readable error message
     * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
     * @return object Returns this to allow chaining.
     */
     public function logError($key, $message)
     {
         // Log a new error
-        // error_message - this is the error message, this is custom
-        // error_code - this is the error code that we will affix to this error
-
         $this->errors[$key] = $message;
 
         // we have tracked a log, close the log for the rest of the chain
@@ -100,7 +68,6 @@ class Validator {
 
     /**
     * Get errors.
-    *
     * @return boolean
     */
     public function isValid()
@@ -113,8 +80,7 @@ class Validator {
 
     /**
     * Get errors.
-    *
-    * @return array Returns errors.
+    * @return array
     */
     public function getErrors()
     {
@@ -126,7 +92,6 @@ class Validator {
 
     /**
     * Set params (e.g. POST params)
-    *
     * @param array $params Array of name/values
     */
     public function setParams($params)
@@ -137,26 +102,42 @@ class Validator {
     /**
     * Tell validator which key to check in this chain. If the key is not found, an
     * error message will be created
-    *
-    * @param string $value set the value we are going to validate in this chain
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to begin chaining.
     */
-    public function check($key)
+    public function check($key, $options=array())
     {
+        // default options
+        $options = array_merge(array(
+            'optional' => false, // when true, only validate present
+        ), $options);
+
         // if the key is not found, then create an error as we will assume then
         // this field is required
-        if (! $this->has($key)) {
+        if (!$this->has($key) and !$options['optional']) {
+
+            // key is not found, and param is not optional
             $this->logError($key, $key . ' is missing');
             return $this;
+
+        } elseif (!$this->has($key) and $options['optional']) {
+
+            // key is not found, but param is optional so we can skip
+            // turn off checking for this param
+            $this->checking = false;
+
+        } else {
+
+            // key is found, so validate
+
+            // set the value once
+            $this->key = $key;
+            $this->value = $this->params[$key];
+
+            // open the log for errors
+            $this->checking = true;
+
         }
-
-        // set the value once
-        $this->key = $key;
-        $this->value = $this->params[$key];
-
-        // open the log for errors
-        $this->checking = true;
 
         return $this;
     }
@@ -164,10 +145,7 @@ class Validator {
 
     /**
     * Value is not empty or whitespaces.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isNotEmpty($message)
@@ -185,10 +163,7 @@ class Validator {
 
     /**
     * Value is a valid email address.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isEmail($message)
@@ -203,10 +178,7 @@ class Validator {
 
     /**
     * Value is letters only, not numbers.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isLetters($message)
@@ -223,10 +195,7 @@ class Validator {
 
     /**
     * Value is a numbers. Positive, negative and zero accepted.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isNumeric($message)
@@ -243,10 +212,7 @@ class Validator {
 
     /**
     * Value is only positive, no negative or zeros.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isPositiveNumber($message)
@@ -264,10 +230,7 @@ class Validator {
 
     /**
     * Value is not positive, negative or zeros ok.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isNotPositiveNumber($message)
@@ -285,10 +248,7 @@ class Validator {
 
     /**
     * Value is only negative, no positive or zeros.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isNegativeNumber($message)
@@ -306,10 +266,7 @@ class Validator {
 
     /**
     * Value is not negative, positives and zeros ok.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isNotNegativeNumber($message)
@@ -327,10 +284,7 @@ class Validator {
 
     /**
     * Value is valid date time string.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isDateTime($message)
@@ -360,10 +314,7 @@ class Validator {
 
     /**
     * Value is valid date string.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isDate($message)
@@ -392,10 +343,7 @@ class Validator {
 
     /**
     * Value is valid time string.
-    *
-    * @param string $error_message human readable error message
-    * @param integer $error_code (optional) can set a numeric value for this type of error
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isTime($message)
@@ -419,11 +367,9 @@ class Validator {
 
 
     /**
-    * Ensure meets minimum length
-    *
-    * @param integer $length human readable error message
-    * @param string $message (optional) error message to log
-    *
+    * Ensure meets minimum length of characters
+    * @param string $message Our error message on fail
+    * @param string $min Min legth of string
     * @return object Returns this to allow chaining.
     */
     public function isMinimumLength($message, $min)
@@ -438,9 +384,7 @@ class Validator {
 
     /**
     * Ensure meets maximum length
-    *
-    * @param
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function isMaximumLength($message, $max)
@@ -455,9 +399,7 @@ class Validator {
 
     /**
     * Ensure meets minimum length
-    *
-    * @param
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function hasUpperCase($message)
@@ -474,9 +416,7 @@ class Validator {
 
     /**
     * Ensure meets minimum length
-    *
-    * @param
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function hasLowerCase($message)
@@ -494,9 +434,7 @@ class Validator {
 
     /**
     * Ensure meets minimum length
-    *
-    * @param
-    *
+    * @param string $message Our error message on fail
     * @return object Returns this to allow chaining.
     */
     public function hasNumber($message)
@@ -509,6 +447,24 @@ class Validator {
             $this->logError($this->key, $message);
         }
 
+        return $this;
+    }
+
+    /**
+     * Will compare two fields are the same (e.g. password, password_confirm)
+     * @param string $compareKey The other value key to compare with
+     * @param string $message Our error message on fail
+     * @return Validator
+     * TODO move to lib
+     */
+    public function isSameAs($compareKey, $message)
+    {
+        //check whether this email exists in the db
+        if ($this->params[$this->key] != $this->params[$compareKey]) {
+            $this->logError($this->key, $message);
+        }
+
+        // return instance
         return $this;
     }
 

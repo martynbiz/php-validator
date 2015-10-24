@@ -42,6 +42,13 @@ Check if a params exists in the validator (basically just isset, but makes code 
 if ($validator->has('name')) {...
 ```
 
+Optional fields are when validation only occurs on that param if the param is given.
+
+```php
+$validator->check('age', array('optional' => true))
+  ->is...
+```
+
 This will return an array of containing the error that occured (Email address is blank). Please note that although the isEmail method was called too, because it has already gathered an error it does not record another. Remember this when ordering your methods in the chain.
 
 It is also possible to do this in one go, and return errors:

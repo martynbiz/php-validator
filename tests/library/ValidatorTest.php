@@ -53,7 +53,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($validator->has('missing_field'));
     }
 
-    public function testCheckIsKeyNotInParams()
+    public function testCheckWhenKeyNotInParams()
     {
         $validator = $this->validator;
         $validator->setParams(array(
@@ -84,6 +84,29 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($validator->isValid());
         $this->assertTrue( array_key_exists('missing_key', $errors) );
         $this->assertEquals(1, count($errors));
+    }
+
+    public function testOptionalWhenKeyNotInParams()
+    {
+        $validator = $this->validator;
+        $validator->setParams(array(
+            'name' => '',
+            // 'age' => '', // missing
+        ));
+
+        $validator->check('name', array('optional' => true))
+            ->isNotEmpty('Name cannot be empty');
+
+        $validator->check('age', array('optional' => true))
+            ->isNotEmpty('Name cannot be empty');
+
+        // get errors. we expect only one error though, the param that
+        // was given (name)
+        $errors = $validator->getErrors();
+
+        // assert
+        $this->assertTrue( array_key_exists('name', $errors) );
+        $this->assertFalse( array_key_exists('age', $errors) );
     }
 
     /**
