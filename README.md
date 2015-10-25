@@ -143,6 +143,7 @@ ensuring that your new method returns the instance logs the error:
 ```php
 class MyValidator extends Validator
 {
+  // create new validation rule
   public function isUniqueEmail($message)
   {
     //check whether this email exists in the db
@@ -155,9 +156,10 @@ class MyValidator extends Validator
     }
 
     // return instance - required
-      return $this;
+    return $this;
   }
 
+  // or create new rule from existing rules
   public function isValidPassword($message)
   {
     return $this
