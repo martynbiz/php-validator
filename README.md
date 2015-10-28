@@ -18,7 +18,6 @@ $validator->setParams($_POST);
 The set() method instructs the object that this is a new value to validate. Additional methods are chained from this. Below shows an example of the object checking a value is not empty, then checking it is a valid email address.
 
 ```php
-$email = '';
 $validator->check('email')
   ->isNotEmpty('Email address is blank')
   ->isEmail('Invalid email address');
@@ -132,7 +131,7 @@ $validator->check('username')
 You can use the logError() method too to log a custom error:
 
 ```php
-$validator->logError('Could not load api', 5000);
+$validator->logError('Could not load api');
 ```
 
 ### Extend Validator ###

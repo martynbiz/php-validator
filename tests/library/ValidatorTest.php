@@ -136,6 +136,32 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getIsNotEmptyArray
      */
+    public function testCheckingStopsInChainWhenErrorFound($params, $valid)
+    {
+        $validator = $this->validator;
+        $validator->setParams([
+            'email' => ''
+        ]);
+
+        // validate
+        $messageEmpty = 'Value is empty'; // should stop at this error
+        $messageNotEmail = 'Value is not valid email';
+        $result = $validator->check('email')
+            ->isNotEmpty($messageEmpty)
+            ->isEmail($messageNotEmail);
+
+        // get errors
+        $errors = $validator->getErrors();
+
+        // assert
+        $this->assertFalse( $validator->isValid() );
+        $this->assertTrue( array_key_exists('email', $errors) );
+        $this->assertEquals($messageEmpty, $errors['email']);
+    }
+
+    /**
+     * @dataProvider getIsNotEmptyArray
+     */
     public function testIsNotEmpty($params, $valid)
     {
         $validator = $this->validator;
