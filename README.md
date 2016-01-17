@@ -9,6 +9,13 @@ composer require martynbiz/php-validator
 After that, create a new instance of the class and set the params to check (e.g. $_POST).
 
 ```php
+$validator = new MartynBiz\Validator($_POST);
+```
+
+Alternatively use the setParams method. Useful if you're setting params after the object has
+been instantiated (e.g. service locator pattern)
+
+```php
 $validator = new MartynBiz\Validator();
 $validator->setParams($_POST);
 ```
