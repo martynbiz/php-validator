@@ -46,7 +46,13 @@ class Validator {
     */
     protected $checking = true;
 
-    // other functions
+    /**
+    * @param array $params Array of name/values -- can also be set by setParams
+    */
+    public function __construct($params)
+    {
+        $this->setParams($params);
+    }
 
     public function __construct($params=array())
     {
