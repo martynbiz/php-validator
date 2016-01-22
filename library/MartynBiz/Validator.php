@@ -35,12 +35,23 @@ class Validator {
     protected $value;
 
     /**
+    * This is the params to check. Might be $_POST for example
+    * @var array
+    */
+    protected $params;
+
+    /**
     * When an error is found in a chain, switch of error logging for the remainder of the chain
     * @var errors
     */
     protected $checking = true;
 
     // other functions
+
+    public function __construct($params=array())
+    {
+        $this->setParams($params);
+    }
 
     /**
     * Log an error

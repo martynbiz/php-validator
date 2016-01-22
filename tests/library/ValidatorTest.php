@@ -18,6 +18,15 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($validator instanceof Validator); // yey!
     }
 
+    public function testInitializationWithParams()
+    {
+        $validator = new Validator(array(
+            'name' => 'Martyn',
+        ));
+
+        $this->assertTrue($validator->has('name')); // yey!
+    }
+
     public function testLogErrors()
     {
         $validator = $this->validator;
