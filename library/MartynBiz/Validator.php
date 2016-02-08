@@ -72,7 +72,7 @@ class Validator {
     */
     public function has($key)
     {
-        return isset($this->params[$key]);
+        return array_key_exists($key, $this->params);
     }
 
     /**
@@ -151,6 +151,21 @@ class Validator {
         return $this;
     }
 
+
+    /**
+    * Value is not empty or whitespaces.
+    * @param string $message Our error message on fail
+    * @return object Returns this to allow chaining.
+    */
+    public function isEmpty($message)
+    {
+        // check
+        if(!empty($this->value) and $this->checking) { // match!
+            $this->logError($this->key, $message);
+        }
+
+        return $this;
+    }
 
     /**
     * Value is not empty or whitespaces.

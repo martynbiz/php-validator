@@ -198,6 +198,26 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider getIsEmptyArray
+     */
+    public function testIsEmpty($params, $valid)
+    {
+        $validator = $this->validator;
+        $validator->setParams($params);
+
+        // validate
+        $result = $validator->check('name')
+            ->isEmpty('Missing field');
+
+        // get errors
+        $errors = $validator->getErrors();
+
+        // assert
+        $this->assertEquals($valid, $validator->isValid());
+        $this->assertEquals(($valid ? 0 : 1), count($errors));
+    }
+
+    /**
      * @dataProvider getIsEmailArray
      */
     public function testIsEmail($params, $valid)
@@ -319,6 +339,37 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
 
     // data providers
+
+    public function getIsEmptyArray()
+    {
+        return [
+            [
+                [
+                    'name' => ''
+                ],
+                true
+            ],
+            [
+                [
+                    'name' => null
+                ],
+                true
+            ],
+            [
+                [
+                    'name' => false
+                ],
+                true
+            ],
+
+            [
+                [
+                    'name' => 'something'
+                ],
+                false
+            ],
+        ];
+    }
 
     public function getIsNotEmptyArray()
     {
