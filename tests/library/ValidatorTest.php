@@ -18,15 +18,6 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($validator instanceof Validator); // yey!
     }
 
-    public function testInitializationWithParams()
-    {
-        $validator = new Validator(array(
-            'name' => 'Martyn',
-        ));
-
-        $this->assertTrue($validator->has('name')); // yey!
-    }
-
     public function testLogErrors()
     {
         $validator = $this->validator;
@@ -166,6 +157,24 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->assertFalse( $validator->isValid() );
         $this->assertTrue( array_key_exists('email', $errors) );
         $this->assertEquals($messageEmpty, $errors['email']);
+    }
+
+    public function testCheckAloneSetsErrorWhenParamMissing()
+    {
+        $validator = $this->validator;
+        $validator->setParams(array(
+            'name' => 'Martyn',
+        ));
+
+        // validate
+        $result = $validator->check('agreement');
+
+        // get errors
+        $errors = $validator->getErrors();
+
+        // assert
+        $this->assertEquals(false, $validator->isValid());
+        $this->assertEquals(1, count($errors));
     }
 
     /**
