@@ -142,45 +142,69 @@ ensuring that your new method returns the instance logs the error:
 ```php
 class MyValidator extends Validator
 {
-  // create new validation rule
-  public function isUniqueEmail($message)
-  {
-    //check whether this email exists in the db
-    //this is an example model, use your own models here
-    $user = $myUsersModel->findByEmail( $this->value );
+    protected $userModel;
 
-    // log error - required
-    if ($user) {
-      $this->logError($message);
+    // example constructor with dependency injection
+    public function __construct($userModel, $data)
+    {
+        $this->userModel = $userModel;
+
+        $this->setData($data);
     }
 
-    // return instance - required
-    return $this;
-  }
+    // create new validation rule
+    public function isUniqueEmail($message)
+    {
+        //check whether this email exists in the db
+        //this is an example model, use your own models here
+        $user = $this->userModel->findByEmail( $this->value );
 
-  // or create new rule from existing rules
-  public function isValidPassword($message)
-  {
-    return $this
-      ->isNotEmpty($message)
-      ->hasLowerCase($message)
-      ->hasUpperCase($message)
-      ->hasNumber($message)
-      ->isMinimumLength($message, 8);
-  }
+        // log error - required
+        if ($user) {
+          $this->logError($message);
+        }
+
+        // return instance - required
+        return $this;
+    }
+
+    // or create new rule from existing rules
+    public function isValidPassword($message)
+    {
+        return $this
+          ->isNotEmpty($message)
+          ->hasLowerCase($message)
+          ->hasUpperCase($message)
+          ->hasNumber($message)
+          ->isMinimumLength($message, 8);
+    }
+
+    // override isValid so we only have to call this method
+    // and keep controllers, etc tidy
+    public function isValid()
+    {
+        // first_name
+        $this->check('first_name')
+            ->isNotEmpty('First name missing');
+
+        // last_name
+        $this->check('last_name')
+            ->isNotEmpty('Last name missing');
+
+        $this->check('password')
+            ->isValidPassword('Invalid password');
+
+        return parent::isValid();
+    }
 }
 ```
 
 Then you can chain the method as with the built in ones:
 
 ```php
-$validator = new MyValidator():
-$validator->setData($_POST);
-$validator->check('email')
-  ->isNotEmpty()
-  ->isEmail()
-  ->isUniqueEmail(); // new method
+$validator = new MyValidator($userModel, $_POST):
 
-$validator->check('password')
-  ->isValidPassword();
+if ($validator->isValid()) {
+    //..
+}
 ```
