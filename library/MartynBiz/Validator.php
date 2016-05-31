@@ -35,10 +35,10 @@ class Validator {
     protected $value;
 
     /**
-    * This is the params to check. Might be $_POST for example
+    * This is the data to check. Might be $_POST for example
     * @var array
     */
-    protected $params;
+    protected $data;
 
     /**
     * When an error is found in a chain, switch of error logging for the remainder of the chain
@@ -46,10 +46,10 @@ class Validator {
     */
     protected $checking = true;
 
-    public function __construct($params=array())
-    {
-        $this->setParams($params);
-    }
+    // public function __construct($data=array())
+    // {
+    //     $this->setData($data);
+    // }
 
     /**
     * Log an error
@@ -72,7 +72,7 @@ class Validator {
     */
     public function has($key)
     {
-        return array_key_exists($key, $this->params);
+        return array_key_exists($key, $this->data);
     }
 
     /**
@@ -100,12 +100,12 @@ class Validator {
     }
 
     /**
-    * Set params (e.g. POST params)
-    * @param array $params Array of name/values
+    * Set data (e.g. POST data)
+    * @param array $data Array of name/values
     */
-    public function setParams($params)
+    public function setData($data=array())
     {
-        $this->params = $params;
+        $this->data = $data;
     }
 
     /**
@@ -141,7 +141,7 @@ class Validator {
 
             // set the value once
             $this->key = $key;
-            $this->value = $this->params[$key];
+            $this->value = $this->data[$key];
 
             // open the log for errors
             $this->checking = true;
@@ -484,7 +484,7 @@ class Validator {
     public function isSameAs($compareKey, $message)
     {
         //check whether this email exists in the db
-        if ($this->params[$this->key] != $this->params[$compareKey]) {
+        if ($this->data[$this->key] != $this->data[$compareKey]) {
             $this->logError($this->key, $message);
         }
 

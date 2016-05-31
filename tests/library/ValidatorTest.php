@@ -41,7 +41,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     public function testHas()
     {
         $validator = $this->validator;
-        $validator->setParams([
+        $validator->setData([
             'name' => '', // empty should return true
             'age' => 34, // numbers should return true
             'email' => 'martyn@example.com',
@@ -56,7 +56,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     public function testCheckWhenKeyNotInParams()
     {
         $validator = $this->validator;
-        $validator->setParams(array(
+        $validator->setData(array(
             'name' => '', // empty should return true
             'age' => 34, // numbers should return true
             'email' => 'martyn@example.com',
@@ -89,7 +89,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     public function testOptionalWhenKeyNotInParams()
     {
         $validator = $this->validator;
-        $validator->setParams(array(
+        $validator->setData(array(
             'name' => '',
             // 'age' => '', // missing
         ));
@@ -112,10 +112,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getIsNotEmptyArray
      */
-    public function testErrorMessageIsSet($params, $valid)
+    public function testErrorMessageIsSet($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams([
+        $validator->setData([
             'name' => ''
         ]);
 
@@ -136,10 +136,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getIsNotEmptyArray
      */
-    public function testCheckingStopsInChainWhenErrorFound($params, $valid)
+    public function testCheckingStopsInChainWhenErrorFound($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams([
+        $validator->setData([
             'email' => ''
         ]);
 
@@ -162,7 +162,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     public function testCheckAloneSetsErrorWhenParamMissing()
     {
         $validator = $this->validator;
-        $validator->setParams(array(
+        $validator->setData(array(
             'name' => 'Martyn',
         ));
 
@@ -180,10 +180,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getIsNotEmptyArray
      */
-    public function testIsNotEmpty($params, $valid)
+    public function testIsNotEmpty($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams($params);
+        $validator->setData($data);
 
         // validate
         $result = $validator->check('name')
@@ -200,10 +200,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getIsEmptyArray
      */
-    public function testIsEmpty($params, $valid)
+    public function testIsEmpty($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams($params);
+        $validator->setData($data);
 
         // validate
         $result = $validator->check('name')
@@ -220,10 +220,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getIsEmailArray
      */
-    public function testIsEmail($params, $valid)
+    public function testIsEmail($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams($params);
+        $validator->setData($data);
 
         // validate
         $result = $validator->check('email')
@@ -240,10 +240,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getIsMinimumLengthArray
      */
-    public function testIsMimimumLength($params, $valid)
+    public function testIsMimimumLength($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams($params);
+        $validator->setData($data);
 
         // validate
         $result = $validator->check('password')
@@ -260,10 +260,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getIsMaximumLengthArray
      */
-    public function testIsMaximumLength($params, $valid)
+    public function testIsMaximumLength($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams($params);
+        $validator->setData($data);
 
         // validate
         $result = $validator->check('password')
@@ -280,10 +280,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getHasUpperCaseArray
      */
-    public function testHasUpperCase($params, $valid)
+    public function testHasUpperCase($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams($params);
+        $validator->setData($data);
 
         // validate
         $result = $validator->check('password')
@@ -300,10 +300,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getHasLowerCaseArray
      */
-    public function testHasLowerCase($params, $valid)
+    public function testHasLowerCase($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams($params);
+        $validator->setData($data);
 
         // validate
         $result = $validator->check('password')
@@ -320,10 +320,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider getHasNumberArray
      */
-    public function testHasNumber($params, $valid)
+    public function testHasNumber($data, $valid)
     {
         $validator = $this->validator;
-        $validator->setParams($params);
+        $validator->setData($data);
 
         // validate
         $result = $validator->check('password')

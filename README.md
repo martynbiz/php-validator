@@ -6,23 +6,14 @@ Install with composer:
 composer require martynbiz/php-validator
 ```
 
-After that, create a new instance of the class and set the params to check (e.g. $_POST).
-
-```php
-$validator = new MartynBiz\Validator($_POST);
-```
-
-Alternatively use the setParams method. Useful if you're setting params after the object has
-been instantiated (e.g. service locator pattern)
+### Basic Usage
 
 ```php
 $validator = new MartynBiz\Validator();
-$validator->setParams($_POST);
+$validator->setData($_POST);
 ```
 
-### Basic Usage
-
-The set() method instructs the object that this is a new value to validate. Additional methods are chained from this. Below shows an example of the object checking a value is not empty, then checking it is a valid email address.
+The check() method instructs the object that this is a new value to validate. Additional methods are chained from this. Below shows an example of the object checking a value is not empty, then checking it is a valid email address.
 
 ```php
 $validator->check('email')
@@ -36,13 +27,13 @@ To fetch the errors from a validation check, use getErrors():
 $errors = $validator->getErrors();
 ```
 
-After validation, check if params are valid:
+After validation, check if data is valid:
 
 ```php
 $continue = $validator->isValid();
 ```
 
-Check if a params has been given. Useful for checking checkboxes have been ticked:
+Check if a data has been given. Useful for checking checkboxes have been ticked:
 
 ```php
 $validator->check('name');
@@ -184,7 +175,7 @@ Then you can chain the method as with the built in ones:
 
 ```php
 $validator = new MyValidator():
-$validator->setParams($_POST);
+$validator->setData($_POST);
 $validator->check('email')
   ->isNotEmpty()
   ->isEmail()
