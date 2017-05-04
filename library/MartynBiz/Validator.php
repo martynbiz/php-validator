@@ -178,7 +178,7 @@ class Validator {
         // $reg = '/^$|\s+/'; // empty or white space
 
         // check
-        if(empty($this->value) and $this->checking) { // match!
+        if($this->value === '' and $this->checking) { // match!
             $this->logError($this->key, $message);
         }
 

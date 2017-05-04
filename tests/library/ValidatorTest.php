@@ -380,22 +380,28 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
                 ],
                 false
             ],
-            [
-                [
-                    'name' => null
-                ],
-                false
-            ],
-            [
-                [
-                    'name' => false
-                ],
-                false
-            ],
+            // [
+            //     [
+            //         'name' => null
+            //     ],
+            //     false
+            // ],
+            // [
+            //     [
+            //         'name' => false
+            //     ],
+            //     false
+            // ],
 
             [
                 [
                     'name' => 'something'
+                ],
+                true
+            ],
+            [
+                [
+                    'name' => '0'
                 ],
                 true
             ],
